@@ -13,17 +13,18 @@ import {
 } from "react-native";
 import colors from "../Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { Swipeable } from "react-native-gesture-handler";
+import { Swipeable, GestureHandlerRootView } from "react-native-gesture-handler";
+
+
 export default class TodoModal extends React.Component {
   state = {
     newTodo: ""
   };
 
 
-  toggleTodoComplete = index => {
+  toggleTodoComplete = (index) => {
     let list = this.props.list
     list.todos[index].completed = !list.todos[index].completed;
-
     this.props.updateList(list);
   }
 
@@ -32,54 +33,47 @@ export default class TodoModal extends React.Component {
     if(!list.todos.some(todo => todo.title === this.state.newTodo)) {
       list.todos.push({title: this.state.newTodo, completed:false})
       this.props.updateList(list);
-
     }
-    
     this.setState({newTodo: ""})
     Keyboard.dismiss()
   }
 
+
   deleteTodo = (index) => {
     let list = this.props.list
-    console.log(list)
     list.todos.splice(index, 1)
     this.props.updateList(list)
   }
 
 
-
-
-
-  renderTodo = (todo,index) => {
+  renderTodo( todo ,index){
     return (
-      <Swipeable renderRightActions={(_, dragX) => this.rightActions(dragX, index)}>
-
-        <View style={styles.todoContainer}>
+      <GestureHandlerRootView>
+        <Swipeable renderRightActions={(_, dragX) => this.rightActions(dragX, index)}>
+          <View style={styles.todoContainer}>
           <TouchableOpacity onPress={() => this.toggleTodoComplete(index)}>
-          <Ionicons
-              name={todo.completed ? "ios-square" : "ios-square-outline"}
-              size={24}
-              color={colors.gray}
-              style={{ width: 32 }}
-            />
+            <Ionicons
+                name={todo.completed ? "ios-square" : "ios-square-outline"}
+                size={24}
+                color={colors.gray}
+                style={{ width: 32 }}/>
           </TouchableOpacity>
 
-            <Text
-              style={[
-                styles.todo,
-                {
-                  textDecorationLine: todo.completed ? "line-through" : "",
-                  color: todo.completed ? colors.gray : colors.black,
-                },
-              ]}
-            >
-              {todo.title}
-            </Text>
-        </View>
-      </Swipeable>
+          <Text style={[styles.todo,
+              {
+                textDecorationLine: todo.completed ? "line-through" : "",
+                color: todo.completed ? colors.gray : colors.black,
+              },
+              ]}>
+            {todo.title}
+          </Text>
+          </View>
+        </Swipeable>
+      </GestureHandlerRootView>
     );
-  };
-
+  }
+    
+  
 
   rightActions = (dragX, index) => {
     return(
@@ -90,6 +84,7 @@ export default class TodoModal extends React.Component {
       </TouchableOpacity>
     );
   }
+
   render() {
     const list = this.props.list;
     const taskCount = list.todos.length;
@@ -115,14 +110,12 @@ export default class TodoModal extends React.Component {
           </View>
         </View>
 
-
         <View style={[styles.section, { flex: 3, marginVertical: 16 }]}>
           <FlatList
             data={list.todos}
             renderItem={({ item, index }) => this.renderTodo(item, index)}
             keyExtractor={item=> item.title}
-            showsVerticalScrollIndicator={false}
-          />
+            showsVerticalScrollIndicator={false}/> 
         </View>
 
         <View style={[styles.section, styles.footer]} >
@@ -132,7 +125,7 @@ export default class TodoModal extends React.Component {
             value = {this.state.newTodo}
             />
           <TouchableOpacity style={[styles.addTodo, { backgroundColor: list.color }]} onPress={()=> this.addTodo()}>
-            <AntDesign name="plus" size={16} color={colors.white} />
+            <AntDesign name="plus" size={18} color={colors.white} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -182,7 +175,7 @@ const styles = StyleSheet.create({
   },
   addTodo: {
     borderRadius: 4,
-    padding: 16,
+    padding:18,
     alignItems: "center",
     justifyContent: "center",
   },

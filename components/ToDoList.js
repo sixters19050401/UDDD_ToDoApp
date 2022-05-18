@@ -2,22 +2,21 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal,Animated  } from "react-native";
 import colors from "../Colors";
 import ToDoModal from "./TodoModal";
-import { Swipeable } from "react-native-gesture-handler";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-
+import { Swipeable, GestureHandlerRootView} from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
 export default class TodoList extends React.Component {
   state = {
     addTodoVisible: false,
   };
   // Đóng mở Modal
   toggleListModal() {
+    let id = this.props
+    console.log(id)
     this.setState({ addTodoVisible: !this.state.addTodoVisible });
   }
-  deleteTask = (index) => {
-    let list = this.props.list
-    console.log(list)
-    // list.todos.splice(index, 1)
-    // this.props.updateList(list)
+  deleteTask() {
+    let list = this.props.list.id
+    this.props.deleteTask(list)
   }
   render() {
     const list = this.props.list;
@@ -30,49 +29,64 @@ export default class TodoList extends React.Component {
         <Modal
           animationType="slide"
           visible={this.state.addTodoVisible}
-          onRequestClose={() => this.toggleListModal()}
-        >
+          onRequestClose={() => this.toggleListModal()}>
           <ToDoModal 
             list={list} 
             closeModal={() => this.toggleListModal()} 
-            updateList={this.props.updateList}
-          />
+            updateList={this.props.updateList}/>
+
         </Modal>
-        <TouchableOpacity
-          style={[styles.listContainer, { backgroundColor: list.color }]}
-          onPress={() => this.toggleListModal()}
-        >
-          <Text style={styles.listTitle} numberOfLines={1}>
-            {list.name}
-          </Text>
 
-          {/* Một task của todoList */}
+        {/* {this.renderTask(list,index)} */}
+        <GestureHandlerRootView>
+          <Swipeable renderRightActions={(_, dragX) => this.rightActions()}>
+            <TouchableOpacity
+                style={[styles.listContainer, { backgroundColor: list.color }]}
+                onPress={() => this.toggleListModal()}>
+            <Text style={styles.listTitle} numberOfLines={1}> {list.name} </Text>
 
-          <View>
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.count}>{completedCount}</Text>
-              <Text style={styles.subtitle}>Remaining</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.count}>{remainingCount}</Text>
-              <Text style={styles.subtitle}>Completed</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=> this.deleteTask(index)}>        
-          <AntDesign name="delete" size={25} color={colors.black} />
-        </TouchableOpacity>
+  {/* Một task của todoList */}
+              <View>
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.count}>{completedCount}</Text>
+                  <Text style={styles.subtitle}>Remaining</Text>
+                </View>
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.count}>{remainingCount}</Text>
+                  <Text style={styles.subtitle}>Completed</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Swipeable>
+        </GestureHandlerRootView>
       </View>
+    );
+
+  }
+
+
+
+
+  
+  rightActions = (dragX) => {
+    return(
+      <TouchableOpacity onPress={()=> this.deleteTask()}>
+          <Animated.View style ={styles.btnDelete}>
+          <AntDesign name="delete" size={30} color={colors.black} 
+          />
+          </Animated.View>
+      </TouchableOpacity>
     );
   }
 }
+
+// Decorate
 const styles = StyleSheet.create({
   listContainer: {
     paddingVertical: 32,
     paddingHorizontal: 16,
-    borderRadius: 6,
-    marginHorizontal: 12,
+    borderRadius: 15,
+    marginTop: 20,
     alignItems: "center",
     width: 200,
   },
@@ -92,4 +106,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.white,
   },
+  btnDelete: {
+    backgroundColor: colors.red,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 60,
+    height:60,
+    borderRadius: 10,
+    marginTop:100,
+    marginLeft:10
+  }
 });

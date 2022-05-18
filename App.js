@@ -7,6 +7,8 @@ import colors from "./Colors";
 import TodoList from "./components/ToDoList";
 import AddListModal from "./components/AddListModal";
 import Fire from "./Fire";
+import {AppRegistry} from 'react-native'
+import database from '@react-native-firebase/'
 export default class App extends React.Component {
   state = {
     addTodoVisible: false,
@@ -14,6 +16,8 @@ export default class App extends React.Component {
     user: {},
     loading: true
   };
+
+
 
   //Kết nối firebase
   componentDidMount() {
@@ -39,7 +43,7 @@ export default class App extends React.Component {
   }
   // Render ra từng list
   renderList = (list) => {
-    return <TodoList list={list} updateList={this.updateList} />;
+    return <TodoList list={list} updateList={this.updateList} deleteTask={this.deleteTask}/>;
   };
 
   addList = list => {
@@ -50,9 +54,13 @@ export default class App extends React.Component {
     })
   };
 
+  deleteTask = id =>{
+    firebase.deleteTask(id)
+  };
+
   updateList = list => {
     firebase.updateList(list)
-  }
+  };
 
   render() {
     if(this.state.loading) {
@@ -78,7 +86,7 @@ export default class App extends React.Component {
         <View style={{ flexDirection: "row" }}>
           <View style={styles.divider} />
           <Text style={styles.title}>
-            ToDo <Text style={{ fontWeight: "300", color: colors.blue }}>List</Text>
+            ToDo <Text style={{ fontWeight: "300", color: colors.blue }}>App</Text>
           </Text>
           <View style={styles.divider} />
         </View>
@@ -92,12 +100,12 @@ export default class App extends React.Component {
         </View>
 
         {/* Danh mục các danh sách ToDo */}
-        <View style={{ height: 275, paddingLeft: 30 }}>
+        <View style={{ height: 400, marginTop: 30 }}>
           <FlatList
             data={this.state.lists}
             keyExtractor={(item) => item.id.toString()}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
+            horizontal={false} //HIển thị các list theo 
+            showsVerticalScrollIndicator={false}   //Hiển thị thanh cuộn
             renderItem={({ item }) => this.renderList(item)}
             keyboardShouldPersistTaps = "always"
           />
@@ -106,6 +114,8 @@ export default class App extends React.Component {
     );
   }
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -116,7 +126,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: colors.lightBlue,
-    height: 1,
+    height: 2,
     flex: 1,
     alignSelf: "center",
   },
@@ -124,7 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 38,
     fontWeight: "800",
     color: colors.black,
-    paddingHorizontal: 64,
+    paddingHorizontal: 30,
   },
   addList: {
     borderWidth: 2,
