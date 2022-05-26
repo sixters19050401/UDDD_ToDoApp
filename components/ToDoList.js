@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Modal,Animated  } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Modal, Animated } from "react-native";
 import colors from "../Colors";
 import ToDoModal from "./TodoModal";
-import { Swipeable, GestureHandlerRootView} from "react-native-gesture-handler";
+import { Swipeable, GestureHandlerRootView } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
 export default class TodoList extends React.Component {
   state = {
@@ -10,17 +10,15 @@ export default class TodoList extends React.Component {
   };
   // Đóng mở Modal
   toggleListModal() {
-    let id = this.props
-    console.log(id)
+    let id = this.props;
+    console.log(id);
     this.setState({ addTodoVisible: !this.state.addTodoVisible });
   }
 
-  
   deleteTask() {
-    let list = this.props.list.id
-    this.props.deleteTask(list)
+    let list = this.props.list.id;
+    this.props.deleteTask(list);
   }
-
 
   render() {
     const list = this.props.list;
@@ -33,31 +31,39 @@ export default class TodoList extends React.Component {
         <Modal
           animationType="slide"
           visible={this.state.addTodoVisible}
-          onRequestClose={() => this.toggleListModal()}>
-          <ToDoModal 
-            list={list} 
-            closeModal={() => this.toggleListModal()} 
-            updateList={this.props.updateList}/>
-
+          onRequestClose={() => this.toggleListModal()}
+        >
+          <ToDoModal
+            list={list}
+            closeModal={() => this.toggleListModal()}
+            updateList={this.props.updateList}
+          />
         </Modal>
 
         {/* {this.renderTask(list,index)} */}
         <GestureHandlerRootView>
           <Swipeable renderRightActions={(_, dragX) => this.rightActions()}>
             <TouchableOpacity
-                style={[styles.listContainer, { backgroundColor: list.color }]}
-                onPress={() => this.toggleListModal()}>
-            <Text style={styles.listTitle} numberOfLines={1}> {list.name} </Text>
+              style={[styles.listContainer, { backgroundColor: list.color }]}
+              onPress={() => this.toggleListModal()}
+            >
+              <Text style={styles.listTitle} numberOfLines={1}>
+                {" "}
+                {list.name}{" "}
+              </Text>
 
-  {/* Một task của todoList */}
+              {/* Một task của todoList */}
               <View>
                 <View style={{ alignItems: "center" }}>
                   <Text style={styles.count}>{completedCount}</Text>
-                  <Text style={styles.subtitle}>Remaining</Text>
+                  <Text style={styles.subtitle}>Tasks Coming</Text>
                 </View>
                 <View style={{ alignItems: "center" }}>
                   <Text style={styles.count}>{remainingCount}</Text>
-                  <Text style={styles.subtitle}>Completed</Text>
+
+                  <Text style={styles.subtitle}>
+                    Done <AntDesign name="checkcircleo" size={10} color={colors.white} />
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -65,34 +71,29 @@ export default class TodoList extends React.Component {
         </GestureHandlerRootView>
       </View>
     );
-
   }
 
-
-
-
-  
   rightActions = (dragX) => {
-    return(
-      <TouchableOpacity onPress={()=> this.deleteTask()}>
-          <Animated.View style ={styles.btnDelete}>
-          <AntDesign name="delete" size={30} color={colors.black} 
-          />
-          </Animated.View>
+    return (
+      <TouchableOpacity onPress={() => this.deleteTask()}>
+        <Animated.View style={styles.btnDelete}>
+          <AntDesign name="delete" size={20} color={colors.black} />
+        </Animated.View>
       </TouchableOpacity>
     );
-  }
+  };
 }
 
 // Decorate
 const styles = StyleSheet.create({
   listContainer: {
-    paddingVertical: 32,
+    paddingVertical: 15,
     paddingHorizontal: 16,
     borderRadius: 15,
     marginTop: 20,
     alignItems: "center",
-    width: 200,
+    marginHorizontal: 10,
+    width: 150,
   },
   listTitle: {
     fontSize: 24,
@@ -114,10 +115,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.red,
     justifyContent: "center",
     alignItems: "center",
-    width: 60,
-    height:60,
+    width: 40,
+    height: 40,
     borderRadius: 10,
-    marginTop:100,
-    marginLeft:10
-  }
+    marginTop: 120,
+    marginLeft: 5,
+  },
 });
