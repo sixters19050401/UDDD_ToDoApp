@@ -1,3 +1,7 @@
+//Modal Thêm Todo
+
+
+
 import React from "react";
 import {
   Text,
@@ -14,20 +18,18 @@ import {
 import colors from "../Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Swipeable, GestureHandlerRootView } from "react-native-gesture-handler";
-
-
 export default class TodoModal extends React.Component {
   state = {
     newTodo: ""
   };
 
-
+  // Đánh dấu task đã hoàn thành
   toggleTodoComplete = (index) => {
     let list = this.props.list
     list.todos[index].completed = !list.todos[index].completed;
     this.props.updateList(list);
   }
-
+  // Thêm một task mới
   addTodo = () => {
     let list = this.props.list
     if(!list.todos.some(todo => todo.title === this.state.newTodo)) {
@@ -38,14 +40,14 @@ export default class TodoModal extends React.Component {
     Keyboard.dismiss()
   }
 
-
+  // Xóa một task
   deleteTodo = (index) => {
     let list = this.props.list
     list.todos.splice(index, 1)
     this.props.updateList(list)
   }
 
-
+  // Render giao diện các task
   renderTodo( todo ,index){
     return (
       <GestureHandlerRootView>
@@ -74,7 +76,7 @@ export default class TodoModal extends React.Component {
   }
     
   
-
+  // Swipe
   rightActions = (dragX, index) => {
     return(
       <TouchableOpacity onPress={()=> this.deleteTodo(index)}>

@@ -14,10 +14,14 @@ export default class TodoList extends React.Component {
     console.log(id)
     this.setState({ addTodoVisible: !this.state.addTodoVisible });
   }
+
+  
   deleteTask() {
     let list = this.props.list.id
     this.props.deleteTask(list)
   }
+
+
   render() {
     const list = this.props.list;
     const completedCount = list.todos.filter((todo) => todo.completed).length;

@@ -4,40 +4,97 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Modal, ActivityIndicator } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import colors from "./Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import TodoList from "./components/ToDoList";
 import AddListModal from "./components/AddListModal";
 import Fire from "./Fire";
-import {AppRegistry} from 'react-native'
-import database from '@react-native-firebase/'
+import netWork from "./components/NetworkUtills"
+let storeData = async (value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem('list', jsonValue)
+  } catch (e) {
+    // saving error
+  }
+}
+
+
+let getData = async () => {
+  try {
+     jsonValue = await AsyncStorage.getItem('list')
+    let jsonParse =  JSON.parse(jsonValue);
+    console.log(jsonParse);
+    return jsonParse
+  
+  } catch(e) {
+    console.log(e)
+  }
+}
+let remove = async() => {
+   await AsyncStorage.clear();
+}
+
+
 export default class App extends React.Component {
+  
   state = {
     addTodoVisible: false,
-    lists: [],
+    lists1: [],
+    lists2: [],
     user: {},
-    loading: true
+    loading: true,
+ 
   };
 
 
 
   //Kết nối firebase
-  componentDidMount() {
-    firebase = new Fire((error,user) => {
-      if(error) {
-        return alert("Something error")
+  async componentDidMount() {
+
+    
+
+    getData().then((val)=>{
+      if(val==null){
+        this.setState({lists1: []})
       }
-      
-      firebase.getLists(lists => {
-        this.setState({lists, user }, () => {
-          this.setState({loading: false});
-        })
-      })
-      this.setState({ user })
+      else {
+        this.setState({lists1: val})
+      }
     });
-  }
+    
+        firebase = new Fire((error,user) => {
+          if(error) {
+            return alert("Something error")
+          }
+          firebase.getLists(lists2 => {    
+            this.setState({lists2, user }, () => {
+              storeData(this.state.lists2)
+              this.setState({loading: false});
+            })
+          })
+          this.setState({ user })
+        });
+      
+
+     };
+  
   componentWillUnMount() {
     firebase.detach()
   }
 
+   configA = (statee) => {
+  
+    if(statee){
+      console.log(this.state.lists2)
+      return this.state.lists2
+    }
+    else{
+      console.log("No")
+      console.log(this.state.lists1)
+      return this.state.lists1
+    }
+  }
+    //Hiển thị Modal
   toggleAddTodoModal() {
     this.setState({ addTodoVisible: !this.state.addTodoVisible });
   }
@@ -47,6 +104,7 @@ export default class App extends React.Component {
   };
 
   addList = list => {
+    this.setState({lists1: [...this.state.lists1, {...list, todos: [] }] })
     firebase.addList({
       name: list.name,
       color: list.color,
@@ -59,8 +117,17 @@ export default class App extends React.Component {
   };
 
   updateList = list => {
+    console.log("a"+this.state.lists2)
     firebase.updateList(list)
+    this.setState({lists1: this.state.lists1.map(item => {
+
+      return item.id === list.id ? list : item
+      })
+    })
   };
+
+
+
 
   render() {
     if(this.state.loading) {
@@ -102,14 +169,21 @@ export default class App extends React.Component {
         {/* Danh mục các danh sách ToDo */}
         <View style={{ height: 400, marginTop: 30 }}>
           <FlatList
-            data={this.state.lists}
-            keyExtractor={(item) => item.id.toString()}
-            horizontal={false} //HIển thị các list theo 
+            data={this.configA(netWork.isNetworkAvailable())}
+            keyExtractor={(item) => item.name.toString()}
+            horizontal={false} //HIển thị các list theo chiều dọc
             showsVerticalScrollIndicator={false}   //Hiển thị thanh cuộn
             renderItem={({ item }) => this.renderList(item)}
             keyboardShouldPersistTaps = "always"
           />
+          
         </View>
+        <TouchableOpacity style={styles.addList} onPress={() => getData()}>
+            <AntDesign name="plus" size={16} color={colors.blue} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addList} onPress={() => remove("list")}>
+            <AntDesign name="plus" size={16} color={colors.blue} />
+          </TouchableOpacity>
       </View>
     );
   }

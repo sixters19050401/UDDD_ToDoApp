@@ -1,18 +1,19 @@
 import firebase from "firebase";
 import '@firebase/firestore'
+import { initializeFirestore, CACHE_SIZE_UNLIMITED } from "firebase/firestore";
+import { collection, onSnapshot, where, query } from "firebase/firestore"; 
+import { enableIndexedDbPersistence } from "firebase/firestore"; 
+import { getFirestore } from "firebase/firestore";
 
-// async function bootstrap() {
-//     await firestore().settings({
-//       persistence: false, // disable offline persistence
-//     });
-//   }
+
+
 const firebaseConfig = {
-    apiKey: "AIzaSyBUImxsIP2OjCHrFiMmffmoV_HhZX2mF0Y",
-    authDomain: "todoapp-87d34.firebaseapp.com",
-    projectId: "todoapp-87d34",
-    storageBucket: "todoapp-87d34.appspot.com",
-    messagingSenderId: "887427036862",
-    appId: "1:887427036862:web:e7acbf27cccb94534250ef"
+    apiKey: "AIzaSyDBFgK5OnSvPSES9MB_5fuDFFfLhC0xIYM",
+    authDomain: "tododata-5ca3b.firebaseapp.com",
+    projectId: "tododata-5ca3b",
+    storageBucket: "tododata-5ca3b.appspot.com",
+    messagingSenderId: "532453662954",
+    appId: "1:532453662954:web:0c96058ce6aaab36e97793"
   };
 
  
@@ -24,8 +25,11 @@ class Fire {
     init(callback) {
         if (!firebase.apps.length) {
            firebase.initializeApp(firebaseConfig)
-          
+    
 
+
+
+           
         }
         firebase.auth().onAuthStateChanged(user => {
             if(user){
@@ -40,6 +44,9 @@ class Fire {
             }
         })
     }
+
+    
+    
     getLists(callback) {
         let ref = this.ref.orderBy("name")
         this.unsubscribe = ref.onSnapshot(snapshot => {
@@ -82,7 +89,10 @@ class Fire {
     detach () {
         this.unsubscribe();
     }
+
+    
 } 
+
 
 
 
